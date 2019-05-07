@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bucaniere | Admin Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+    <style>
+    #notification {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      display: none;
+      z-index: 50;
+    }
+    </style>
   </head>
 
   <body>
@@ -19,7 +28,23 @@
             <%- body %>
           </div>
         </div>
+
+        <div id="notification" class="notification"></div>
       </div>
     </section>
+
+    <script>
+      const notification = document.querySelector('#notification')
+
+      function notify (msg, success = true) {
+        notification.innerText = msg
+        notification.style.display = 'block'
+        notification.className = 'notification ' + (success ? 'is-success' : 'is-danger')
+
+        setTimeout(() => {
+          notification.style.display = 'none'
+        }, 5000);
+      }
+    </script>
   </body>
 </html>

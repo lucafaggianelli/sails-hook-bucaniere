@@ -22,7 +22,7 @@
         <% } %>
 
         <td><button class="button is-small" onclick="openEditModal(<%= index %>)">Edit</button></td>
-        <td><button class="button is-small is-danger">Delete</button></td>
+        <td><button class="button is-small is-danger" onclick="destroy(<%= index %>)">Delete</button></td>
       </tr>
       <% }) %>
     </tbody>
@@ -61,7 +61,7 @@
     </section>
 
     <footer class="modal-card-foot">
-      <button class="button is-success" onclick="save()">Save changes</button>
+      <button class="button is-success" onclick="save(event)">Save changes</button>
       <button class="button" onclick="closeEditModal()">Cancel</button>
     </footer>
   </div>
@@ -84,7 +84,10 @@ function closeEditModal () {
   editModal.classList.remove('is-active')
 }
 
-function save () {
+function save (event) {
+  event.target.classList.add('is-loading')
+  event.target.disabled = true
+
   let data = { _csrf: window.SAILS_LOCALS._csrf }
   document.querySelectorAll('#modal-edit input').forEach(input => {
     if (input.disabled) { return true }
@@ -102,8 +105,39 @@ function save () {
       },
       body: JSON.stringify(data)
     })
-    .then(console.log)
-    .catch(console.error)
+    .then(notify('Model successfully saved'))
+    .catch(err => {
+      notify('Can\'t save model (see console)', false)
+      console.error(err)
+    })
+    .then(() => {
+      event.target.classList.remove('is-loading')
+      event.target.disabled = false
+    })
+}
+
+function destroy (event, itemIndex) {
+  const item = SAILS_LOCALS.all[itemIndex]
+
+  event.target.classList.add('is-loading')
+  event.target.disabled = true
+
+  fetch(`/${model}/${item.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(notify('Model successfully deleted'))
+    .catch(err => {
+      notify('Can\'t delete model (see console)', false)
+      console.error(err)
+    })
+    .then(() => {
+      event.target.classList.remove('is-loading')
+      event.target.disabled = false
+    })
 }
 </script>
 
