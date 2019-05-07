@@ -10,8 +10,15 @@
   <body>
     <section class="section">
       <div class="container">
-        <h1 class="title">Ciao Bucaniere!</h1>
-        <%- body %>
+        <div class="columns">
+          <div class="column is-one-third-tablet is-one-quarter-widescreen is-one-fifth-fullhd">
+            <%- partial('./menu') %>
+          </div>
+
+          <div class="column">
+            <%- body %>
+          </div>
+        </div>
       </div>
     </section>
   </body>
