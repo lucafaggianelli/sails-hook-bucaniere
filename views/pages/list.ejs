@@ -1,5 +1,7 @@
-<h1><%= model %></h1>
-<p>Total records: <%= total %></p>
+<h1 class="title is-capitalized"><%= model %></h1>
+<h2 class="subtitle">Total entries: <%= total %></h2>
+
+<button class="button is-primary" onclick="openEditModal()">Create</button>
 
 <div class="table-container">
   <table class="table is-hoverable is-fullwidth is-narrow">
@@ -39,7 +41,9 @@
       <% for (let name in attributes) {
         const attribute = attributes[name]
         const type = (attribute.model || attribute.type === 'number') ? 'number' : 'text'
-        const disabled = attribute.autoUpdatedAt || attribute.autoCreatedAt %>
+        const disabled = attribute.autoMigrations.autoIncrement ||
+          attribute.autoUpdatedAt ||
+          attribute.autoCreatedAt %>
       <div class="field is-horizontal">
         <div class="field-label is-normal">
           <label class="label"><%= name %></label>
@@ -47,7 +51,7 @@
         <div class="field-body">
           <div id="attribute-<%= name %>" class="field">
             <div class="control">
-              <input class="input" type="<%= type %>" <%= disabled ? 'disabled' : '' %>>
+              <input class="input" type="<%= type %>" name="<%= name %>" <%= disabled ? 'disabled' : '' %>>
             </div>
             <p class="help"><%= attribute.required ? 'Required' : '' %></p>
           </div>
@@ -57,7 +61,7 @@
     </section>
 
     <footer class="modal-card-foot">
-      <button class="button is-success">Save changes</button>
+      <button class="button is-success" onclick="save()">Save changes</button>
       <button class="button" onclick="closeEditModal()">Cancel</button>
     </footer>
   </div>
@@ -65,18 +69,41 @@
 
 <script>
 const editModal = document.querySelector('#modal-edit')
+const model = '<%= model %>'
 
 function openEditModal (itemIndex) {
   editModal.classList.add('is-active')
 
-  const item = SAILS_LOCALS.all[itemIndex]
-  for (let attribute in item) {
-    document.querySelector(`#attribute-${attribute} input`).value = item[attribute]
+  const item = itemIndex !== undefined ? SAILS_LOCALS.all[itemIndex] : null
+  for (let attribute in SAILS_LOCALS.attributes) {
+    document.querySelector(`#attribute-${attribute} input`).value = item ? item[attribute] : ''
   }
 }
 
 function closeEditModal () {
   editModal.classList.remove('is-active')
+}
+
+function save () {
+  let data = { _csrf: window.SAILS_LOCALS._csrf }
+  document.querySelectorAll('#modal-edit input').forEach(input => {
+    if (input.disabled) { return true }
+    const isNumber = input.getAttribute('type') === 'number'
+    data[input.getAttribute('name')] = isNumber ? parseInt(input.value) || 0 : input.value
+  })
+
+  const id = document.querySelector('#modal-edit input[name="id"]').value
+
+  fetch(`/${model}/${id}`, {
+      method: id ? 'PATCH' : 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(console.log)
+    .catch(console.error)
 }
 </script>
 
