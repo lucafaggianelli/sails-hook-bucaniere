@@ -13,13 +13,13 @@
     </thead>
 
     <tbody>
-      <% all.forEach(item => { %>
+      <% all.forEach((item, index) => { %>
       <tr>
         <% for (let prop in item) { %>
         <td><%= item[prop] %></td>
         <% } %>
 
-        <td><button class="button is-small" onclick="openEditModal()">Edit</button></td>
+        <td><button class="button is-small" onclick="openEditModal(<%= index %>)">Edit</button></td>
         <td><button class="button is-small is-danger">Delete</button></td>
       </tr>
       <% }) %>
@@ -44,7 +44,7 @@
           <label class="label"><%= name %></label>
         </div>
         <div class="field-body">
-          <div class="field">
+          <div id="attribute-<%= name %>" class="field">
             <div class="control">
               <input class="input" type="<%= type %>">
             </div>
@@ -65,11 +65,18 @@
 <script>
 const editModal = document.querySelector('#modal-edit')
 
-function openEditModal () {
+function openEditModal (itemIndex) {
   editModal.classList.add('is-active')
+
+  const item = SAILS_LOCALS.all[itemIndex]
+  for (let attribute in item) {
+    document.querySelector(`#attribute-${attribute} input`).value = item[attribute]
+  }
 }
 
 function closeEditModal () {
   editModal.classList.remove('is-active')
 }
 </script>
+
+<%- exposeLocalsToBrowser() %>
