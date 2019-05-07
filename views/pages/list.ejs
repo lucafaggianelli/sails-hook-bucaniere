@@ -1,0 +1,28 @@
+<h1><%= model %></h1>
+<p>Total records: <%= total %></p>
+
+<div class="table-container">
+  <table class="table is-hoverable is-fullwidth is-narrow">
+    <thead>
+      <tr>
+        <% for (let prop in all[0]) { %>
+        <th><%= prop %></th>
+        <% } %>
+        <th colspan="2"><%# Action buttons %></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% all.forEach(item => { %>
+      <tr>
+        <% for (let prop in item) { %>
+        <td><%= item[prop] %></td>
+        <% } %>
+
+        <td><button class="button is-small">Edit</button></td>
+        <td><button class="button is-small is-danger">Delete</button></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
