@@ -1,0 +1,10 @@
+<div class="columns is-multiline">
+  <% widgets.forEach(widget => { %>
+  <div class="column is-one-third-tablet">
+    <div class="box">
+      <h1 class="title"><%= widget.title %></h1>
+      <p class="has-text-centered"><%= widget.content  %></p>
+    </div>
+  </div>
+  <% }) %>
+<div>
