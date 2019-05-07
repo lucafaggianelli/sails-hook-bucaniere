@@ -38,7 +38,8 @@
     <section class="modal-card-body">
       <% for (let name in attributes) {
         const attribute = attributes[name]
-        const type = (attribute.model || attribute.type === 'number') ? 'number' : 'text' %>
+        const type = (attribute.model || attribute.type === 'number') ? 'number' : 'text'
+        const disabled = attribute.autoUpdatedAt || attribute.autoCreatedAt %>
       <div class="field is-horizontal">
         <div class="field-label is-normal">
           <label class="label"><%= name %></label>
@@ -46,7 +47,7 @@
         <div class="field-body">
           <div id="attribute-<%= name %>" class="field">
             <div class="control">
-              <input class="input" type="<%= type %>">
+              <input class="input" type="<%= type %>" <%= disabled ? 'disabled' : '' %>>
             </div>
             <p class="help"><%= attribute.required ? 'Required' : '' %></p>
           </div>
