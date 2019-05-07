@@ -78,6 +78,7 @@ module.exports = function (sails) {
 
     renderView(res, 'pages/list', {
       all,
+      attributes: sails.models[model].attributes,
       model,
       total
     })

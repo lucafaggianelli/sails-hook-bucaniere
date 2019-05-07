@@ -19,10 +19,57 @@
         <td><%= item[prop] %></td>
         <% } %>
 
-        <td><button class="button is-small">Edit</button></td>
+        <td><button class="button is-small" onclick="openEditModal()">Edit</button></td>
         <td><button class="button is-small is-danger">Delete</button></td>
       </tr>
       <% }) %>
     </tbody>
   </table>
 </div>
+
+<div id="modal-edit" class="modal">
+  <div class="modal-background" onclick="closeEditModal()"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Edit Item</p>
+      <button class="delete" aria-label="close" onclick="closeEditModal()"></button>
+    </header>
+
+    <section class="modal-card-body">
+      <% for (let name in attributes) {
+        const attribute = attributes[name]
+        const type = (attribute.model || attribute.type === 'number') ? 'number' : 'text' %>
+      <div class="field is-horizontal">
+        <div class="field-label is-normal">
+          <label class="label"><%= name %></label>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <div class="control">
+              <input class="input" type="<%= type %>">
+            </div>
+            <p class="help"><%= attribute.required ? 'Required' : '' %></p>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </section>
+
+    <footer class="modal-card-foot">
+      <button class="button is-success">Save changes</button>
+      <button class="button" onclick="closeEditModal()">Cancel</button>
+    </footer>
+  </div>
+</div>
+
+<script>
+const editModal = document.querySelector('#modal-edit')
+
+function openEditModal () {
+  editModal.classList.add('is-active')
+}
+
+function closeEditModal () {
+  editModal.classList.remove('is-active')
+}
+</script>
