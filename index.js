@@ -1,4 +1,5 @@
 const path = require('path')
+const fs = require('fs')
 
 /**
  * List of hooks that required for adminpanel to work
@@ -12,6 +13,14 @@ var requiredHooks = [
 ]
 
 const BASE_VIEWS_PATH = path.join(__dirname, 'views/')
+
+// define base locals
+const BASE_LOCALS = {
+  menuTemplates: fs.readdirSync('./views/emails/')
+    .filter(f => f.endsWith('.ejs'))
+    .map(f => f.slice(0, -4)),
+  layout: path.join(BASE_VIEWS_PATH, 'layouts/layout.ejs')
+}
 
 module.exports = function (sails) {
   return {
@@ -53,19 +62,11 @@ module.exports = function (sails) {
 
       sails.after(eventsToWaitFor, () => {
         sails.router.bind('/admin', actionDashboard)
+        sails.router.bind('/admin/email-templates/:template', actionTemplate)
         sails.router.bind('/admin/:model', actionList)
 
         sails.log.info('Bucaniere loaded')
       })
-
-      // Bind assets
-      // require('./bindAssets')(sails, function (err, result) {
-      //   if (err) {
-      //     sails.log.error(err)
-      //     return cb(err)
-      //   }
-      //   cb()
-      // })
 
       return cb()
     }
@@ -94,6 +95,26 @@ module.exports = function (sails) {
     renderView(res, 'pages/dashboard', { widgets })
   }
 
+  async function actionTemplate (req, res) {
+    const url = require('url')
+    const template = req.param('template')
+    let html = null
+    let err = null
+
+    try {
+      html = await sails.renderView(`emails/${template}`,
+        Object.assign({ url, layout: '../layouts/layout-email' }, req.query))
+    } catch (e) {
+      err = e
+    }
+
+    renderView(res, 'pages/template', {
+      template,
+      html,
+      err
+    })
+  }
+
   async function actionList (req, res) {
     const model = req.param('model')
     const total = await sails.models[model].count()
@@ -109,7 +130,7 @@ module.exports = function (sails) {
 
   function renderView (res, view, locals) {
     res.view(path.join(BASE_VIEWS_PATH, view),
-      Object.assign({}, { layout: path.join(BASE_VIEWS_PATH, 'layouts/layout.ejs') }, locals)
+      Object.assign({}, BASE_LOCALS, locals)
     )
   }
 }

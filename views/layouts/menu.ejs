@@ -3,6 +3,7 @@
     <li><a href="/admin">Admin</a></li>
     <li><a href="/">Back Home</a></li>
   </ul>
+
   <p class="menu-label">Models</p>
   <ul class="menu-list">
     <% for (let model of Object.keys(sails.models).sort()) {
@@ -12,6 +13,18 @@
       <a class="<%= active ? 'is-active' : '' %>" href="<%= link %>"><%= model %></a>
     </li>
     <% } %>
+  </ul>
+
+  <p class="menu-label">Email Templates</p>
+  <ul class="menu-list">
+    <% menuTemplates.forEach(template => {
+      const link = `/admin/email-templates/${template}`
+      const active = req.path === link %>
+    <li class="is-capitalized">
+      <a class="<%= active ? 'is-active' : '' %>" href="<%= link %>">
+        <%= template.slice(5).replace(/-/g, ' ') %></a>
+    </li>
+    <% }) %>
   </ul>
 
   <%# <p class="menu-label">
