@@ -137,6 +137,7 @@ function save (event) {
     .then(() => {
       event.target.classList.remove('is-loading')
       event.target.disabled = false
+      closeEditModal()
     })
 }
 
