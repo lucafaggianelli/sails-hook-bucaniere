@@ -8,9 +8,11 @@
     <style>
     #notification {
       position: fixed;
-      top: 15px;
-      left: 15px;
-      display: none;
+      top: 20px;
+      right: 20px;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.6s;
       z-index: 50;
     }
     </style>
@@ -38,11 +40,13 @@
 
       function notify (msg, success = true) {
         notification.innerText = msg
-        notification.style.display = 'block'
+        notification.style.visibility = 'visible'
+        notification.style.opacity = 0.85
         notification.className = 'notification ' + (success ? 'is-success' : 'is-danger')
 
         setTimeout(() => {
-          notification.style.display = 'none'
+          notification.style.visibility = 'hidden'
+          notification.style.opacity = 0
         }, 5000);
       }
     </script>
