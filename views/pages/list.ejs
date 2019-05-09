@@ -40,7 +40,15 @@
     <section class="modal-card-body">
       <% for (let name in attributes) {
         const attribute = attributes[name]
-        const type = (attribute.model || attribute.type === 'number') ? 'number' : 'text'
+        let type = 'text'
+        let klass = 'input'
+        if (attribute.model || attribute.type === 'number') {
+          type = 'number'
+        } else if (attribute.type === 'boolean') {
+          type = 'checkbox'
+          klass = 'checkbox'
+        }
+
         const disabled = attribute.autoMigrations.autoIncrement ||
           attribute.autoUpdatedAt ||
           attribute.autoCreatedAt %>
@@ -51,7 +59,7 @@
         <div class="field-body">
           <div id="attribute-<%= name %>" class="field">
             <div class="control">
-              <input class="input" type="<%= type %>" name="<%= name %>" <%= disabled ? 'disabled' : '' %>>
+              <input class="<%= klass %>" type="<%= type %>" name="<%= name %>" <%= disabled ? 'disabled' : '' %>>
             </div>
             <p class="help"><%= attribute.required ? 'Required' : '' %></p>
           </div>
@@ -76,7 +84,12 @@ function openEditModal (itemIndex) {
 
   const item = itemIndex !== undefined ? SAILS_LOCALS.all[itemIndex] : null
   for (let attribute in SAILS_LOCALS.attributes) {
-    document.querySelector(`#attribute-${attribute} input`).value = item ? item[attribute] : ''
+    const input = document.querySelector(`#attribute-${attribute} input`)
+    if (input.type === 'checkbox') {
+      input.checked = item ? item[attribute] : false
+    } else {
+      input.value = item ? item[attribute] : ''
+    }
   }
 }
 
@@ -91,8 +104,17 @@ function save (event) {
   let data = { _csrf: window.SAILS_LOCALS._csrf }
   document.querySelectorAll('#modal-edit input').forEach(input => {
     if (input.disabled) { return true }
-    const isNumber = input.getAttribute('type') === 'number'
-    data[input.getAttribute('name')] = isNumber ? parseInt(input.value) || 0 : input.value
+
+    let value
+    if (input.type === 'number') {
+      value = parseInt(input.value) || 0
+    } else if (input.type === 'checkbox') {
+      value = input.checked
+    } else {
+      value = input.value
+    }
+
+    data[input.getAttribute('name')] = value
   })
 
   const id = document.querySelector('#modal-edit input[name="id"]').value
@@ -105,10 +127,12 @@ function save (event) {
       },
       body: JSON.stringify(data)
     })
-    .then(notify('Model successfully saved'))
+    .then(response => {
+      if (!response.ok) { throw new Error() }
+      notify('Model successfully saved')
+    })
     .catch(err => {
-      notify('Can\'t save model (see console)', false)
-      console.error(err)
+      notify('Can\'t save model', false)
     })
     .then(() => {
       event.target.classList.remove('is-loading')
@@ -129,9 +153,12 @@ function destroy (event, itemIndex) {
         'Content-Type': 'application/json'
       }
     })
-    .then(notify('Model successfully deleted'))
+    .then(response => {
+      if (!response.ok) { throw new Error() }
+      notify('Model successfully deleted')
+    })
     .catch(err => {
-      notify('Can\'t delete model (see console)', false)
+      notify('Can\'t delete model', false)
       console.error(err)
     })
     .then(() => {
