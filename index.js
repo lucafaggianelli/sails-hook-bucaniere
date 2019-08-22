@@ -79,18 +79,6 @@ module.exports = function (sails) {
       title: 'Users',
       content: await sails.models.user.count()
     })
-    widgets.push({
-      title: 'Posts',
-      content: '189'
-    })
-    widgets.push({
-      title: 'Sales',
-      content: '€ 199k'
-    })
-    widgets.push({
-      title: 'Regions',
-      content: '4'
-    })
 
     renderView(res, 'pages/dashboard', { widgets })
   }
