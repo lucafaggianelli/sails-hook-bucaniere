@@ -2,6 +2,14 @@
   "name": "sails-hook-bucaniere",
   "version": "0.2.0",
   "description": "Admin panel for Sails apps",
+  "keywords": [
+    "sails-hook",
+    "sails",
+    "sails.js",
+    "hook",
+    "admin",
+    "admin-panel"
+  ],
   "repository": "https://github.com/lucafaggianelli/sails-hook-bucaniere",
   "main": "index.js",
   "scripts": {
@@ -10,8 +18,8 @@
   "sails": {
     "isHook": true
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Luca Faggianelli",
+  "license": "MIT",
   "devDependencies": {
     "eslint": "^6.2.1",
     "eslint-config-standard": "^14.0.0",
