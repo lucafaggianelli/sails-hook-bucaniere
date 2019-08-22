@@ -62,7 +62,8 @@ module.exports = function (sails) {
 
       sails.after(eventsToWaitFor, () => {
         sails.router.bind('/admin', actionDashboard)
-        sails.router.bind('/admin/email-templates/:template', actionTemplate)
+        sails.router.bind('/admin/email-templates/:template', actionTemplate, 'get')
+        sails.router.bind('/admin/email-templates/:template', actionTemplate, 'post')
         sails.router.bind('/admin/:model', actionList)
 
         sails.log.info('Bucaniere loaded')
@@ -86,21 +87,37 @@ module.exports = function (sails) {
   async function actionTemplate (req, res) {
     const url = require('url')
     const template = req.param('template')
+    const templateData = req.param('params') ? JSON.parse(req.param('params')) : {}
     let html = null
     let err = null
 
-    try {
-      html = await sails.renderView(`emails/${template}`,
-        Object.assign({ url, layout: '../layouts/layout-email' }, req.query))
-    } catch (e) {
-      err = e
-    }
+    if (req.method === 'POST') {
+      try {
+        await sails.helpers.sendTemplateEmail.with({
+          to: req.param('to'),
+          subject: 'Sails test email',
+          template,
+          templateData
+        })
+      } catch (e) {
+        sails.log.error(e)
+      }
 
-    renderView(res, 'pages/template', {
-      template,
-      html,
-      err
-    })
+      res.redirect('back')
+    } else {
+      try {
+        html = await sails.renderView(`emails/${template}`,
+          Object.assign({ url, layout: '../layouts/layout-email' }, templateData))
+      } catch (e) {
+        err = e
+      }
+
+      renderView(res, 'pages/template', {
+        template,
+        html,
+        err
+      })
+    }
   }
 
   async function actionList (req, res) {

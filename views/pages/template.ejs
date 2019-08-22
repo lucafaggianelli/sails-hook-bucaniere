@@ -1,5 +1,60 @@
-<% if (err) { %>
-<p><%= err %></p>
-<% } %>
+<div class="box">
+  <h2 class="is-size-4">Template preview</h2>
+  <% if (err) { %>
+  <p><%= err %></p>
+  <% } %>
 
-<%- html %>
+  <%- html %>
+</div>
+
+<div class="box">
+  <form method="GET">
+    <div class="field">
+      <label class="label">Template params (JSON)</label>
+
+      <div class="control">
+        <textarea
+          class="textarea"
+          placeholder='{ "param": "value" }'
+          name="params"
+        ><%= req.param('params') %></textarea>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <button class="button" type="submit">
+          <span class="icon">
+            <i class="material-icons">refresh</i>
+          </span>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="box">
+  <form method="POST">
+    <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+    <input type="hidden" name="params" value="<%= req.param('params') %>" />
+
+    <div class="field has-addons">
+      <div class="control is-expanded">
+        <input
+          class="input"
+          type="email"
+          name="to"
+          placeholder="me@email.com"
+          value="<%= me ? me.emailAddress : '' %>"
+        >
+      </div>
+
+      <div class="control">
+        <button class="button is-primary">
+          Send Test Email
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
