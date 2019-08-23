@@ -10,19 +10,21 @@
         <% for (let prop in all[0]) { %>
         <th><%= prop %></th>
         <% } %>
-        <th colspan="2"><%# Action buttons %></th>
+        <th><%# Action buttons %></th>
       </tr>
     </thead>
 
     <tbody>
       <% all.forEach((item, index) => { %>
-      <tr>
+      <tr class="is-relative">
         <% for (let prop in item) { %>
         <td><%= item[prop] %></td>
         <% } %>
 
-        <td><button class="button is-small" onclick="openEditModal(<%= index %>)">Edit</button></td>
-        <td><button class="button is-small is-danger" onclick="destroy(<%= index %>)">Delete</button></td>
+        <td class="table__actions">
+          <button class="button is-small" onclick="openEditModal(<%= index %>)">Edit</button>
+          <button class="button is-small is-danger" onclick="destroy(<%= index %>)">Delete</button>
+        </td>
       </tr>
       <% }) %>
     </tbody>
