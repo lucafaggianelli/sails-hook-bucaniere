@@ -76,10 +76,12 @@ module.exports = function (sails) {
   async function actionDashboard (req, res) {
     const widgets = []
 
-    widgets.push({
-      title: 'Users',
-      content: await sails.models.user.count()
-    })
+    for (const widget of sails.config.bucaniere.widgets) {
+      widgets.push({
+        title: widget.title,
+        content: await sails.models[widget.model].count()
+      })
+    }
 
     renderView(res, 'pages/dashboard', { widgets })
   }
