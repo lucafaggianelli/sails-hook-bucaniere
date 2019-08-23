@@ -13,6 +13,8 @@ Access the admin panel at
 
 # Usage
 
+## Models
+
 Browse yor models, click on the left menu to access a model and list entries.
 
 ![alt](https://raw.githubusercontent.com/lucafaggianelli/sails-hook-bucaniere/master/docs/model-list.png)
@@ -20,6 +22,13 @@ Browse yor models, click on the left menu to access a model and list entries.
 Click on them to edit or delete
 
 ![alt](https://raw.githubusercontent.com/lucafaggianelli/sails-hook-bucaniere/master/docs/model-edit.png)
+
+## Email Templates
+
+Render email templates in the browser, supplying variables to the template in JSON format
+and send test email.
+
+![alt](https://raw.githubusercontent.com/lucafaggianelli/sails-hook-bucaniere/master/docs/preview-template.png)
 
 # More features to come!
 
