@@ -3,7 +3,17 @@
   <div class="column is-one-third-tablet">
     <div class="box">
       <h1 class="title"><%= widget.title %></h1>
-      <p class="has-text-centered"><%= widget.content  %></p>
+
+      <div class="is-size-4 has-text-centered"><%= widget.content %></div>
+
+      <div class="buttons is-right">
+        <a class="button is-inverted is-primary" href="/admin/<%= widget.model %>">
+          <span class="icon">
+            <i class="material-icons">visibility</i>
+          </span>
+          <span>See all</span>
+        </a>
+      </div>
     </div>
   </div>
   <% }) %>

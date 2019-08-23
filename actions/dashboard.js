@@ -5,7 +5,7 @@ module.exports = async function (sails, req, res) {
 
   for (const widget of sails.config.bucaniere.widgets) {
     widgets.push({
-      title: widget.title,
+      ...widget,
       content: await sails.models[widget.model].count()
     })
   }
