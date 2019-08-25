@@ -63,6 +63,10 @@ module.exports = function (sails) {
           'post')
 
         sails.router.bind(
+          '/admin/logs/:action?',
+          (req, res) => require('./actions/logs')(sails, req, res))
+
+        sails.router.bind(
           '/admin/:model',
           (req, res) => require('./actions/model')(sails, req, res))
 

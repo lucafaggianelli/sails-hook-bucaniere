@@ -1,0 +1,40 @@
+<div
+  id="log"
+  style="overflow-y:auto;max-height:calc(100vh - 48px)"
+>
+</div>
+
+<script src="//unpkg.com/ansi_up"></script>
+
+<script>
+const ansi_up = new AnsiUp
+const logEl = document.getElementById('log')
+let logLength = 0
+
+setInterval(updateLog, 5000)
+updateLog()
+
+function updateLog () {
+  const options = {
+    headers: { 'Range': `bytes=${logLength}` }
+  }
+
+  fetch('/admin/logs/read', options)
+    .then(response => {
+      if (!response.ok) {
+        throw Error(response.statusText)
+      }
+
+      logLength += parseInt(response.headers.get('Content-Length'))
+      return response.text()
+    })
+    .then(log => {
+      let html = ansi_up.ansi_to_html(log)
+      html = html.replace(/\n/g, '<br>')
+
+      logEl.innerHTML += html
+      logEl.scrollTop = logEl.scrollHeight
+    })
+    .catch(e => {})
+}
+</script>
