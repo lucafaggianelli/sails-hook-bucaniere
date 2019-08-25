@@ -13,5 +13,7 @@ module.exports = async function (sails, req, res) {
     // }
   }
 
-  return renderView(res, 'pages/logs', { })
+  return renderView(res, 'pages/logs', {
+    logfile: sails.config.bucaniere.logfile
+  })
 }
