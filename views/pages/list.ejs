@@ -42,6 +42,10 @@
     <section class="modal-card-body">
       <% for (let name in attributes) {
         const attribute = attributes[name]
+
+        // TODO: collections not supported yet
+        if (attribute.collection) { continue }
+
         let type = 'text'
         let klass = 'input'
         if (attribute.model || attribute.type === 'number') {
