@@ -13,10 +13,22 @@ const ansi_up = new AnsiUp
 const logEl = document.getElementById('log')
 let logLength = 0
 
-setInterval(updateLog, 5000)
+const TIMEOUT_LIVE = 5000
+const TIMEOUT_LONG = 10000
+
 updateLog()
 
 function updateLog () {
+  fetch('/admin/logs/read', { method: 'HEAD' })
+    .then(checkSize)
+    .then(getLogFile)
+    .catch(() => {
+      // end of log file
+      setTimeout(updateLog, TIMEOUT_LONG)
+    })
+}
+
+function getLogFile () {
   const options = {
     headers: { 'Range': `bytes=${logLength}` }
   }
@@ -28,6 +40,7 @@ function updateLog () {
       }
 
       logLength += parseInt(response.headers.get('Content-Length'))
+
       return response.text()
     })
     .then(log => {
@@ -36,7 +49,20 @@ function updateLog () {
 
       logEl.innerHTML += html
       logEl.scrollTop = logEl.scrollHeight
+
+      setTimeout(updateLog, TIMEOUT_LIVE)
     })
-    .catch(e => {})
+    .catch(e => {
+      console.warn('Error reading log')
+      setTimeout(updateLog, TIMEOUT_LONG)
+    })
+}
+
+function checkSize (response) {
+  const totalSize = parseInt(response.headers.get('content-length'))
+
+  if (totalSize <= logLength) {
+    throw Error('End of file')
+  }
 }
 </script>
