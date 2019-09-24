@@ -48,7 +48,7 @@
 
         let type = 'text'
         let klass = 'input'
-        if (attribute.model || attribute.type === 'number') {
+        if (attribute.type === 'number') {
           type = 'number'
         } else if (attribute.type === 'boolean') {
           type = 'checkbox'
@@ -66,7 +66,22 @@
         <div class="field-body">
           <div id="attribute-<%= name %>" class="field">
             <div class="control">
+              <% if (attribute.model) { %>
+              <div class="dropdown autocomplete" data-model="<%= attribute.model %>">
+                <div class="dropdown-trigger">
+                  <input
+                    name="<%= name %>"
+                    class="input"
+                    type="text"
+                    placeholder=""
+                    aria-haspopup="true"
+                  >
+                </div>
+                <div class="dropdown-menu" role="menu"></div>
+              </div>
+              <% } else { %>
               <input class="<%= klass %>" type="<%= type %>" name="<%= name %>" <%= disabled ? 'disabled' : '' %>>
+              <% } %>
             </div>
             <p class="help"><%= attribute.required ? 'Required' : '' %></p>
           </div>
@@ -92,11 +107,33 @@ function openEditModal (itemIndex) {
   const item = itemIndex !== undefined ? SAILS_LOCALS.all[itemIndex] : null
   for (let attribute in SAILS_LOCALS.attributes) {
     const input = document.querySelector(`#attribute-${attribute} input`)
+
+    if (!input) { continue }
+
     if (input.type === 'checkbox') {
       input.checked = item ? item[attribute] : false
     } else {
       input.value = item ? item[attribute] : ''
     }
+  }
+
+  for (let autocomplete of document.querySelectorAll('.autocomplete')) {
+    bulmahead(autocomplete.querySelector('input'), autocomplete.querySelector('.dropdown-menu'), v => {
+      return fetch(`/${autocomplete.dataset.model}?where={"name":{"contains":"${v}"}}&populate=false`)
+        .then((response) => {
+          if (!response.ok) {
+            throw Error(response.statusText)
+          }
+
+          return response.json()
+        })
+        .then(json => {
+          return json.map(({ id, name }) => { return { label: name, value: id } })
+        })
+        .catch((e) => {
+          console.error('Can\'t search in autocomplete', e)
+        })
+    })
   }
 }
 

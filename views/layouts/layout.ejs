@@ -64,6 +64,68 @@
           notification.style.opacity = 0
         }, 5000);
       }
+
+      function debounce(func, wait, immediate) {
+        var timeout;
+        return function() {
+          var context = this, args = arguments;
+          var later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+          };
+          var callNow = immediate && !timeout;
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+          if (callNow) func.apply(context, args);
+        };
+      };
+
+      function bulmahead (input, menuEl, api, onSelect, delay = 250, minLen = 2) {
+        menuEl.innerHTML = '<div class="dropdown-content"></div>'
+
+        const setValue = e => {
+          e.preventDefault()
+          var label = e.target.text
+          var value = e.target.dataset.value
+          input.value = value
+          menuEl.style.display = 'none'
+          if (onSelect) {
+            onSelect({ label, value })
+          }
+          return false
+        }
+
+        const handleApi = e => {
+          const value = e.target.value
+          menuEl.style.display = 'none'
+          menuEl.innerHTML = '<div class="dropdown-content"></div>'
+          if (value.length <= minLen) {
+            return
+          }
+          api(value).then(suggestions => {
+            if (suggestions && suggestions.length > 0) {
+              menuEl.style.display = 'block'
+            } else {
+              menuEl.style.display = 'none'
+              return
+            }
+
+            const suggestionsEl = suggestions.map(({ label, value }) => {
+              const a = document.createElement('a')
+              a.href = '#'
+              a.classList.add('dropdown-item')
+              a.innerHTML = label
+              a.dataset.value = value
+              a.addEventListener('click', setValue)
+              return a
+            })
+            suggestionsEl.map(suggEl => {
+              menuEl.childNodes[0].appendChild(suggEl)
+            })
+          })
+        }
+        input.addEventListener('keyup', debounce(handleApi, delay))
+      }
     </script>
   </body>
 </html>
