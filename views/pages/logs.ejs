@@ -3,7 +3,7 @@
     Log file <%= logfile %>
   </div>
 
-  <div id="log" style="overflow-y:auto;max-height:calc(100vh - 48px)"></div>
+  <pre id="log" style="overflow-y:auto;max-height:calc(100vh - 48px)"></pre>
 </div>
 
 <script src="//unpkg.com/ansi_up"></script>
@@ -45,7 +45,7 @@ function getLogFile () {
     })
     .then(log => {
       let html = ansi_up.ansi_to_html(log)
-      html = html.replace(/\n/g, '<br>')
+      // html = html.replace(/\n/g, '<br>')
 
       logEl.innerHTML += html
       logEl.scrollTop = logEl.scrollHeight
